@@ -9,7 +9,7 @@ const User = require("../models/userModel");
 // @access Public
 const registerUser = asyncHandler(async(req,res) => {
   const {username,email,password} = req.body;
-  if(!username | !email | !password){
+  if (!username || !email || !password) {
     res.status(400);
     throw new Error("All fields are required");
   }
@@ -42,7 +42,7 @@ const registerUser = asyncHandler(async(req,res) => {
 // @access Public
 const loginUser = asyncHandler(async(req,res) => {
   const {email,password} = req.body;
-  if(!email | !password){
+  if (!email || !password) {
     res.status(400);
     throw new Error("All fields are required");
   }
@@ -50,6 +50,10 @@ const loginUser = asyncHandler(async(req,res) => {
   const user = await User.findOne({email});
   // Compare password with Hashed password
   if (user && (await bcrypt.compare(password,user.password))) {
+    if (!process.env.ACCESS_TOKEN_SECRET) {
+      res.status(500);
+      throw new Error("Missing ACCESS_TOKEN_SECRET environment variable");
+    }
     const accessToken = jwt.sign(
       {
         user: {
