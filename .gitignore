@@ -7,12 +7,5 @@
 /temp
 /uploads
 /public
-/views
-/config
-/database
-/models
-/routes
-/controllers
-/services
 /contact-book-backend/
 /mycontacts-backend/
