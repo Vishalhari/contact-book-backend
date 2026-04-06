@@ -1,11 +1,14 @@
 const express = require("express");
 const connectDb = require("./config/dbConnection");
-const errorHandler = require("./middleware/errorhandler");
+const errorHandler = require("./middleware/errorHandler");
 require("dotenv").config();
 
-connectDb();
 const app = express();
 const port = process.env.PORT || 5000;
+
+connectDb().catch((err) => {
+  console.error("Database connection failed:", err.message);
+});
 
 app.use(express.json());
 
@@ -21,9 +24,10 @@ app.get("/", (req, res) => {
 
 app.use(errorHandler);
 
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
 
-
-
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+module.exports = app;
