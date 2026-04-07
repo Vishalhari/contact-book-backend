@@ -2,6 +2,7 @@ const express = require("express");
 const connectDb = require("./config/dbConnection");
 const errorHandler = require("./middleware/errorHandler");
 require("dotenv").config();
+const cors = require("cors");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -11,6 +12,15 @@ connectDb().catch((err) => {
 });
 
 app.use(express.json());
+
+// cors middleware
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+
 
 
 
