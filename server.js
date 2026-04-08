@@ -7,11 +7,18 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 5000;
 
-connectDb().catch((err) => {
-  console.error("Database connection failed:", err.message);
-});
-
 app.use(express.json());
+
+// Database connection middleware for Serverless environment
+app.use(async (req, res, next) => {
+  try {
+    await connectDb();
+    next();
+  } catch (error) {
+    console.error("Database connection failed:", error.message);
+    res.status(500).json({ title: "Database Error", message: "Failed to connect to the database" });
+  }
+});
 
 // cors middleware
 app.use(
