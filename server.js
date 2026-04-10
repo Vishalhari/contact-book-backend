@@ -20,10 +20,24 @@ app.use(async (req, res, next) => {
   }
 });
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://contact-book-frontend-mep5s506j-vishalhari1s-projects.vercel.app",
+];
+
 // cors middleware
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: function (origin, callback) {
+      // allow requests with no origin (like Postman)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
