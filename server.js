@@ -9,6 +9,45 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 
+
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://contact-book-frontend-mep5s506j-vishalhari1s-projects.vercel.app",
+];
+
+// ✅ CORS FIX (MANUAL - WORKS ON VERCEL)
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "http://localhost:3000",
+    "https://contact-book-frontend-mep5s506j-vishalhari1s-projects.vercel.app",
+  ];
+
+  const origin = req.headers.origin;
+
+  // Allow only specific origins
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
+  // ✅ Handle preflight request
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
+  next();
+});
+
 // Database connection middleware for Serverless environment
 app.use(async (req, res, next) => {
   try {
@@ -19,34 +58,6 @@ app.use(async (req, res, next) => {
     res.status(500).json({ title: "Database Error", message: "Failed to connect to the database" });
   }
 });
-
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://contact-book-frontend-mep5s506j-vishalhari1s-projects.vercel.app",
-];
-
-// ✅ CORS middleware (MUST be before routes)
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // Postman / mobile apps
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-// ✅ Handle preflight requests (VERY IMPORTANT for Vercel)
-app.options("*", cors());
-
-
 
 
 // routes
