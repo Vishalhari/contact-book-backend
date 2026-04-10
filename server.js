@@ -25,12 +25,11 @@ const allowedOrigins = [
   "https://contact-book-frontend-mep5s506j-vishalhari1s-projects.vercel.app",
 ];
 
-// cors middleware
+// ✅ CORS middleware (MUST be before routes)
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like Postman)
-      if (!origin) return callback(null, true);
+      if (!origin) return callback(null, true); // Postman / mobile apps
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
@@ -39,8 +38,13 @@ app.use(
       }
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// ✅ Handle preflight requests (VERY IMPORTANT for Vercel)
+app.options("*", cors());
 
 
 
